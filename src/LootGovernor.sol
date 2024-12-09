@@ -189,6 +189,16 @@ contract LootGovernor is
         override(GovernorUpgradeable)  
         returns (bool)
     {
+        require(owner() != address(0), "Upgrades disabled - owner is zero address");
         return super.supportsInterface(interfaceId);
     }
+
+    function renounceOwnership() public virtual override onlyOwner {
+        _transferOwnership(address(0));
+    }
+
+    function transferOwnership(address newOwner) public virtual override onlyOwner {
+        _transferOwnership(newOwner); 
+    }
+
 }

@@ -35,7 +35,6 @@ contract DeployLootGovernanceZero is Script {
             timelockInitData
         );
         
-        // Corrigido o casting para usar payable
         LootTimelock timelock = LootTimelock(payable(address(timelockProxy)));
 
         // Deploy Governor Implementation
@@ -48,7 +47,7 @@ contract DeployLootGovernanceZero is Script {
             address(timelock),
             VOTING_DELAY,
             VOTING_PERIOD,
-            address(0xcC4004465Cceef5e779357848DfF8e5da305ef8B) // multisign address here
+            deployer 
         );
 
         // Deploy Governor Proxy
@@ -68,10 +67,14 @@ contract DeployLootGovernanceZero is Script {
         timelock.grantRole(executorRole, address(0));
         timelock.revokeRole(adminRole, deployer);
 
+        // Transferir ownership para endereço zero após setup completo
+        governor.renounceOwnership();
+
         console2.log("Timelock Implementation deployed to:", address(timelockImplementation));
         console2.log("Timelock Proxy deployed to:", address(timelockProxy));
         console2.log("Governor Implementation deployed to:", address(implementation));
         console2.log("Governor Proxy deployed to:", address(governorProxy));
+        console2.log("Ownership transferred to zero address");
 
         vm.stopBroadcast();
     }
